@@ -8,7 +8,7 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 |----------------|---------------------------------------------|
 | Language       | Go 1.25                          |
 | HTTP Framework | [Gin v1.12.0](https://github.com/gin-gonic/gin) |
-| Database       | MongoDB — official `go.mongodb.org/mongo-driver` |
+| Database       | MongoDB 8 — official `go.mongodb.org/mongo-driver` |
 | Architecture   | Hexagonal (Ports & Adapters)                |
 | Auth           | JWT — `Authorization: Bearer <token>`       |
 | Config         | Environment variables + `godotenv` (local)  |
