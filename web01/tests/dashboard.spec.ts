@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { mockInboxApi } from './fixtures';
 
 test.beforeEach(async ({ page }) => {
+  await mockInboxApi(page);
   await page.goto('/');
 });
 
@@ -27,7 +29,7 @@ test('renders the top navigation bar', async ({ page }) => {
 
 test('renders the inbox list with channel filters', async ({ page }) => {
   await expect(page.getByRole('heading', { name: /Inbox/ })).toBeVisible();
-  await expect(page.getByText('(128)')).toBeVisible();
+  await expect(page.getByText('(25)')).toBeVisible();
 
   for (const channel of ['All', 'Facebook', 'LINE', 'Instagram']) {
     await expect(page.getByRole('button', { name: channel, exact: true })).toBeVisible();
@@ -43,8 +45,8 @@ test('renders all conversation items', async ({ page }) => {
   await expect(
     page.getByTestId('message-item-1').getByText('Can you confirm the tracking number for order #8812?')
   ).toBeVisible();
-  await expect(page.getByText('Pending').first()).toBeVisible();
-  await expect(page.getByText('Replied').first()).toBeVisible();
+  await expect(page.getByTestId('message-item-1').getByText('Pending')).toBeVisible();
+  await expect(page.getByTestId('message-item-2').getByText('Replied')).toBeVisible();
 });
 
 test('first conversation is active by default', async ({ page }) => {

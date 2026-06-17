@@ -1,70 +1,56 @@
 <script setup lang="ts">
-interface Message {
-  id: number
-  name: string
-  avatar: string
-  channelColor: string
-  time: string
-  timeHighlighted: boolean
-  preview: string
-  status: 'Pending' | 'Replied'
+import { storeToRefs } from 'pinia'
+import { useInboxStore, type Channel, type InboxMessage } from '~/stores/inbox'
+
+const store = useInboxStore()
+const { messages, channel, status, page, totalItems, totalPages, loading, error, isEmpty } = storeToRefs(store)
+
+const channels: { label: string, value: '' | Channel, color: string }[] = [
+  { label: 'All', value: '', color: '' },
+  { label: 'Facebook', value: 'facebook', color: '#1877F2' },
+  { label: 'LINE', value: 'line', color: '#06C755' },
+  { label: 'Instagram', value: 'instagram', color: '#E4405F' }
+]
+
+const channelColors: Record<Channel, string> = {
+  facebook: '#1877F2',
+  line: '#06C755',
+  instagram: '#E4405F'
 }
 
-const channels = [
-  { label: 'All', color: '' },
-  { label: 'Facebook', color: '#1877F2' },
-  { label: 'LINE', color: '#06C755' },
-  { label: 'Instagram', color: '#E4405F' }
-]
+const activeId = ref<string | null>(null)
+const searchInput = ref('')
+let searchTimer: ReturnType<typeof setTimeout> | null = null
 
-const messages: Message[] = [
-  {
-    id: 1,
-    name: 'Marcus Watanabe',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAwPp5iHNxM-YtHR_qdfKPxxqu4m0gad5q2rXW_LB86zEQ-hxHGB7sjYpuC5QnykUBJeC5iBX7Z5-ExZdVgSFDKoqGe_1IOnfDu4Z19smwLwAOKqwQr1Demseztpb09ZIsUn_VxBThlgFRrPG0EfkFEhE8w-egl0dUA-rUL1DyH0t7t_0JnTGRZc_LNWJnSSz19C6NNMmR-MwY8sAaqi4HsjsNtkDwClLCZNRVFRPYbo7YzD-hsreR9b4xjLfMMi1pg2vK1EvGACsc',
-    channelColor: '#06C755',
-    time: '10:30 AM',
-    timeHighlighted: true,
-    preview: 'Can you confirm the tracking number for order #8812?',
-    status: 'Pending'
-  },
-  {
-    id: 2,
-    name: 'Sarah Jenkins',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDGuT3Z3u_JOCf3Nlp1xIPLet0oDLymZkoNEBYiN91tpz1cWvqgLq46i7mdsLtqHVXNBr1w22GFljaDmdZ0x_vUpdBrHnLOR0EgZDVuVUKow3c61Cf_TtnLsRVqsihuDuBRX3kwYveJMXytBPcC39n_nwS4lnNLmYDd4OsXRWkH0WiJNdc1aZON5-v-G4ENs_5MK1w1_hhJQz8jx1dC9ag540SAE40KzfyNrZLb_Mwg3kGNIpATzZwgrZkcnqYv_BxDyezwCJ1K4tM',
-    channelColor: '#1877F2',
-    time: 'Yesterday',
-    timeHighlighted: false,
-    preview: 'Thank you for the quick resolution!',
-    status: 'Replied'
-  },
-  {
-    id: 3,
-    name: 'David Wilson',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOsS7cbdAa6-xRklsbbgouQLT46LSkBRFkzbiTMWDJRYps1cab4WVMfe8b9eH41rPKv5dPAcP0g9q1tmMOdnU2KTecD7_Sm8kHBmQEep1iwqP_93h0KRv5OPnez9SAsZSkVgL6bO7JJAdZmImK9cKLaT0TKE36O7_2YjCtKg4CUWTpe9rTHNRTHCsn-V6KAOAz9DONS6CmpJhOdfLKHps-3U-bCIcPfHGkwsx6P1sXF1U1i_EVTlGbFRBcq2VBiOIhhYAr-IVzvEc',
-    channelColor: '#E4405F',
-    time: '2:15 PM',
-    timeHighlighted: true,
-    preview: 'Do you have the new winter collection in stock yet?',
-    status: 'Pending'
-  },
-  {
-    id: 4,
-    name: 'Li Na',
-    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC0-d54lHHaH-FX3ThH0MFOzRW0OLgoe9_wLynLHAu9XIjzWxqzCswbU8ut7DyKlm98UvstJ95nkFsmM4RTrV8dSlXJ0y4l_rZqSx4SxN65-Fzoj5SUIrm2pR3t9db9Wppxz3ZAjVwoN1TKj6czqsyJecKkKRyBq1J1mH8bt5oQQkDF-KB1EShyMzCJBjOWbY1cZsqvs5U-UYBl3uqKdVUcDGS_c9R_cLElJ5J1ZlI4YP5pZKLIL3IEObUnDbFIYLwTj6vSBW8ztbA',
-    channelColor: '#06C755',
-    time: 'Monday',
-    timeHighlighted: false,
-    preview: "I'd like to update my shipping address for the recent order.",
-    status: 'Replied'
+// Fetch on the client so Playwright can intercept the request.
+onMounted(() => {
+  store.fetchMessages()
+})
+
+// Keep the first conversation highlighted as data changes.
+watch(messages, (list) => {
+  if (list.length === 0) {
+    activeId.value = null
+  } else if (!list.some(m => m.id === activeId.value)) {
+    activeId.value = list[0]!.id
   }
-]
+})
 
-const activeId = ref(messages[0]!.id)
-const activeChannel = ref('All')
-
-function selectMessage(id: number) {
+function selectMessage(id: string) {
   activeId.value = id
+}
+
+function onSearchInput() {
+  if (searchTimer) clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    store.setSearch(searchInput.value.trim())
+  }, 250)
+}
+
+function formatTime(message: InboxMessage): string {
+  const date = new Date(message.updated_at)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 }
 </script>
 
@@ -73,84 +59,161 @@ function selectMessage(id: number) {
     <div class="p-lg space-y-md">
       <div class="flex items-center justify-between">
         <h3 class="font-display-lg text-display-lg">
-          Inbox <span class="text-on-surface-variant font-normal text-headline-md ml-xs">(128)</span>
+          Inbox <span class="text-on-surface-variant font-normal text-headline-md ml-xs">({{ totalItems }})</span>
         </h3>
         <button class="p-unit rounded hover:bg-surface-container transition-colors">
           <span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
         </button>
       </div>
-      <div class="flex gap-sm overflow-x-auto scrollbar-hide pb-unit">
+
+      <!-- Channel Filters -->
+      <div data-testid="filter-channel" class="flex gap-sm overflow-x-auto scrollbar-hide pb-unit">
         <button
-          v-for="channel in channels"
-          :key="channel.label"
-          :class="activeChannel === channel.label
+          v-for="ch in channels"
+          :key="ch.label"
+          :data-testid="`filter-channel-${ch.value || 'all'}`"
+          :class="channel === ch.value
             ? 'px-md py-1.5 rounded-full bg-primary text-on-primary font-label-caps text-label-caps flex items-center gap-xs'
             : 'px-md py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-caps text-label-caps flex items-center gap-xs'"
-          @click="activeChannel = channel.label"
+          @click="store.setChannel(ch.value)"
         >
           <span
-            v-if="channel.color"
+            v-if="ch.color"
             class="w-2 h-2 rounded-full"
-            :style="{ backgroundColor: channel.color }"
+            :style="{ backgroundColor: ch.color }"
           />
-          {{ channel.label }}
+          {{ ch.label }}
         </button>
       </div>
+
+      <!-- Status filter & Search -->
       <div class="flex gap-sm">
         <div class="flex-1 relative">
-          <span class="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-outline">calendar_today</span>
-          <select class="w-full bg-surface-container-low border-none rounded-lg pl-9 pr-md py-2 text-body-sm appearance-none focus:ring-1 focus:ring-primary">
-            <option>Last 7 days</option>
-            <option>Last 30 days</option>
-            <option>Custom Range</option>
+          <span class="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-outline">tune</span>
+          <select
+            data-testid="filter-status"
+            class="w-full bg-surface-container-low border-none rounded-lg pl-9 pr-md py-2 text-body-sm appearance-none focus:ring-1 focus:ring-primary"
+            :value="status"
+            @change="store.setStatus(($event.target as HTMLSelectElement).value as '' | 'pending' | 'replied')"
+          >
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="replied">Replied</option>
           </select>
         </div>
       </div>
+      <div class="relative">
+        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-outline">search</span>
+        <input
+          v-model="searchInput"
+          data-testid="search-input"
+          type="text"
+          placeholder="Search sender or message..."
+          class="w-full bg-surface-container-low border-none rounded-lg pl-9 pr-md py-2 text-body-sm focus:ring-1 focus:ring-primary"
+          @input="onSearchInput"
+        >
+      </div>
     </div>
 
+    <!-- Scrollable Message List -->
     <div class="flex-1 overflow-y-auto scrollbar-hide px-sm space-y-xs pb-lg">
-      <div
-        v-for="message in messages"
-        :key="message.id"
-        :data-testid="`message-item-${message.id}`"
-        :class="activeId === message.id
-          ? 'message-item-active group p-md rounded-xl cursor-pointer transition-all duration-200 hover:shadow-sm'
-          : 'group p-md rounded-xl cursor-pointer transition-all duration-200 hover:bg-surface-container border-l-4 border-transparent'"
-        @click="selectMessage(message.id)"
-      >
-        <div class="flex gap-md">
-          <div class="relative flex-shrink-0">
-            <img alt="Avatar" class="w-12 h-12 rounded-full object-cover" :src="message.avatar">
-            <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
-              <div class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: message.channelColor }" />
+      <!-- Loading -->
+      <div v-if="loading" data-testid="inbox-loading" class="p-lg text-center text-on-surface-variant font-body-sm">
+        Loading messages...
+      </div>
+
+      <!-- Unauthorized / Error -->
+      <div v-else-if="error" data-testid="inbox-error" class="p-lg text-center text-error font-body-sm">
+        {{ error }}
+      </div>
+
+      <!-- Empty -->
+      <div v-else-if="isEmpty" data-testid="inbox-empty" class="p-lg text-center text-on-surface-variant font-body-sm">
+        No messages found
+      </div>
+
+      <!-- Messages -->
+      <template v-else>
+        <div
+          v-for="message in messages"
+          :key="message.id"
+          :data-testid="`message-item-${message.id}`"
+          :class="activeId === message.id
+            ? 'message-item-active group p-md rounded-xl cursor-pointer transition-all duration-200 hover:shadow-sm'
+            : 'group p-md rounded-xl cursor-pointer transition-all duration-200 hover:bg-surface-container border-l-4 border-transparent'"
+          @click="selectMessage(message.id)"
+        >
+          <div class="flex gap-md">
+            <div class="relative flex-shrink-0">
+              <img alt="Avatar" class="w-12 h-12 rounded-full object-cover" :src="message.avatar_url">
+              <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
+                <div class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: channelColors[message.channel] }" />
+              </div>
             </div>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-start mb-0.5">
-              <h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">{{ message.name }}</h4>
-              <span
-                class="font-label-caps text-[10px] whitespace-nowrap"
-                :class="message.timeHighlighted ? 'text-primary' : 'text-on-surface-variant'"
-              >{{ message.time }}</span>
-            </div>
-            <p
-              class="font-body-sm text-body-sm truncate mb-sm"
-              :class="message.status === 'Pending' ? 'text-on-secondary-container' : 'text-on-surface-variant'"
-            >{{ message.preview }}</p>
-            <div class="flex items-center justify-between">
-              <span
-                v-if="message.status === 'Pending'"
-                class="px-sm py-0.5 rounded-md bg-primary-container/10 text-primary font-status-label text-status-label border border-primary/20"
-              >Pending</span>
-              <span
-                v-else
-                class="px-sm py-0.5 rounded-md bg-tertiary-fixed text-tertiary font-status-label text-status-label border border-outline"
-              >Replied</span>
-              <div v-if="message.status === 'Pending'" class="w-2.5 h-2.5 rounded-full bg-primary" />
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-start mb-0.5">
+                <h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">{{ message.sender_name }}</h4>
+                <span
+                  class="font-label-caps text-[10px] whitespace-nowrap"
+                  :class="message.unread ? 'text-primary' : 'text-on-surface-variant'"
+                >{{ formatTime(message) }}</span>
+              </div>
+              <p
+                class="font-body-sm text-body-sm truncate mb-sm"
+                :class="message.status === 'pending' ? 'text-on-secondary-container' : 'text-on-surface-variant'"
+              >{{ message.preview }}</p>
+              <div class="flex items-center justify-between">
+                <span
+                  v-if="message.status === 'pending'"
+                  class="px-sm py-0.5 rounded-md bg-primary-container/10 text-primary font-status-label text-status-label border border-primary/20"
+                >Pending</span>
+                <span
+                  v-else
+                  class="px-sm py-0.5 rounded-md bg-tertiary-fixed text-tertiary font-status-label text-status-label border border-outline"
+                >Replied</span>
+                <div v-if="message.unread" class="w-2.5 h-2.5 rounded-full bg-primary" />
+              </div>
             </div>
           </div>
         </div>
+      </template>
+    </div>
+
+    <!-- Pagination -->
+    <div
+      v-if="totalPages > 1"
+      data-testid="pagination-controls"
+      class="px-lg py-md border-t border-outline-variant flex items-center justify-between gap-sm"
+    >
+      <button
+        data-testid="pagination-prev"
+        class="p-unit rounded hover:bg-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        :disabled="page <= 1"
+        @click="store.goToPage(page - 1)"
+      >
+        <span class="material-symbols-outlined text-on-surface-variant">chevron_left</span>
+      </button>
+      <div class="flex items-center gap-xs">
+        <button
+          v-for="p in totalPages"
+          :key="p"
+          :data-testid="`pagination-page-${p}`"
+          :class="page === p
+            ? 'w-8 h-8 rounded-full bg-primary text-on-primary font-label-caps text-label-caps'
+            : 'w-8 h-8 rounded-full text-on-surface-variant hover:bg-surface-container transition-colors font-label-caps text-label-caps'"
+          @click="store.goToPage(p)"
+        >
+          {{ p }}
+        </button>
       </div>
+      <button
+        data-testid="pagination-next"
+        class="p-unit rounded hover:bg-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        :disabled="page >= totalPages"
+        @click="store.goToPage(page + 1)"
+      >
+        <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+      </button>
     </div>
   </section>
 </template>

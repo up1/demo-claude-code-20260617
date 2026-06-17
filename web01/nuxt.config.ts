@@ -2,7 +2,12 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/eslint'],
+  modules: ['@nuxt/eslint', '@pinia/nuxt'],
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: ''
+    }
+  },
   app: {
     head: {
       htmlAttrs: { lang: 'en', class: 'light' },
