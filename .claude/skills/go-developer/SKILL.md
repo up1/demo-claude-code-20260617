@@ -14,6 +14,7 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 | Config         | Environment variables + `godotenv` (local)  |
 | Logging        | `slog` (stdlib, structured JSON)            |
 | Deployment     | Docker Compose (local) + multi-stage Dockerfile (prod) |
+| Testing        | `testing` + `httptest` + [testify](https://github.com/stretchr/testify) |
 
 
 ## Project Structure
@@ -27,8 +28,11 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 │   │   │   └── order.go         # Order, OrderItem structs + business rules
 │   │   ├── ports/
 │   │   │   ├── order_repository.go   # OrderRepository interface (driven)
+            ├── order_repository_test.go # OrderRepository unit tests
 │   │   │   ├── product_repository.go # ProductRepository interface (driven)
+            ├── product_repository_test.go # ProductRepository unit tests
 │   │   │   └── order_service.go      # OrderService interface (driving)
+            └── order_service_test.go      # OrderService unit tests
 │   │   └── service/
 │   │       └── order_service.go # use-case logic, implements OrderService port
 │   └── adapters/

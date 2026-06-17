@@ -1,49 +1,5 @@
 # REST API — Create Order (Go)
 
-## Stack
-
-| Concern        | Choice                                      |
-|----------------|---------------------------------------------|
-| Language       | Go (latest stable)                          |
-| HTTP Framework | Gin (latest)                                |
-| Database       | MongoDB — official `go.mongodb.org/mongo-driver` |
-| Architecture   | Hexagonal (Ports & Adapters)                |
-| Auth           | JWT — `Authorization: Bearer <token>`       |
-| Config         | Environment variables + `godotenv` (local)  |
-| Logging        | `slog` (stdlib, structured JSON)            |
-| Deployment     | Docker Compose (local) + multi-stage Dockerfile (prod) |
-
----
-
-## Project Structure
-
-```
-.
-├── cmd/
-│   └── main.go                  # wiring: config, DB, routes
-├── internal/
-│   ├── core/
-│   │   ├── domain/
-│   │   │   └── order.go         # Order, OrderItem structs + business rules
-│   │   ├── ports/
-│   │   │   ├── order_repository.go   # OrderRepository interface (driven)
-│   │   │   ├── product_repository.go # ProductRepository interface (driven)
-│   │   │   └── order_service.go      # OrderService interface (driving)
-│   │   └── service/
-│   │       └── order_service.go # use-case logic, implements OrderService port
-│   └── adapters/
-│       ├── handler/
-│       │   └── order_handler.go # Gin HTTP adapter (driving)
-│       └── repository/
-│           ├── order_mongo.go   # MongoDB impl of OrderRepository
-│           └── product_mongo.go # MongoDB impl of ProductRepository
-├── docker-compose.yml
-├── Dockerfile
-└── .env.example
-```
-
----
-
 ## Domain Model
 
 ### Order
@@ -220,7 +176,13 @@ Loaded at startup into a `Config` struct. App fails fast if any required variabl
 | Repository  | Integration | Real MongoDB via Docker Compose in test environment   |
 | Handler     | Unit        | `httptest` + mock `OrderService`                      |
 
----
+
+## Test cases in table format
+| Test Case | Input | Expected Output |
+|-----------|-------|-----------------|
+| Create Order | Valid request with unique idempotency key | 201 Created, order saved
+| Create Order | Duplicate idempotency key | 200 OK, existing order returned    
+
 
 ## Docker Compose
 
@@ -235,7 +197,7 @@ services:
       - mongodb
 
   mongodb:
-    image: mongo:7
+    image: mongo:8
     ports:
       - "27017:27017"
     volumes:
