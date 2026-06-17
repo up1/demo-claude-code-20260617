@@ -18,27 +18,22 @@ const channelColors: Record<Channel, string> = {
   instagram: '#E4405F'
 }
 
-const activeId = ref<string | null>(null)
+const route = useRoute()
 const searchInput = ref('')
 let searchTimer: ReturnType<typeof setTimeout> | null = null
+
+// The active thread is driven by the route (/conversations/{id}); on the
+// dashboard (`/`) the first conversation is highlighted by default.
+const activeId = computed<string | null>(() => {
+  const param = route.params.thread_id
+  if (typeof param === 'string' && param) return param
+  return messages.value[0]?.id ?? null
+})
 
 // Fetch on the client so Playwright can intercept the request.
 onMounted(() => {
   store.fetchMessages()
 })
-
-// Keep the first conversation highlighted as data changes.
-watch(messages, (list) => {
-  if (list.length === 0) {
-    activeId.value = null
-  } else if (!list.some(m => m.id === activeId.value)) {
-    activeId.value = list[0]!.id
-  }
-})
-
-function selectMessage(id: string) {
-  activeId.value = id
-}
 
 function onSearchInput() {
   if (searchTimer) clearTimeout(searchTimer)
@@ -134,48 +129,53 @@ function formatTime(message: InboxMessage): string {
 
       <!-- Messages -->
       <template v-else>
-        <div
+        <NuxtLink
           v-for="message in messages"
           :key="message.id"
-          :data-testid="`message-item-${message.id}`"
-          :class="activeId === message.id
-            ? 'message-item-active group p-md rounded-xl cursor-pointer transition-all duration-200 hover:shadow-sm'
-            : 'group p-md rounded-xl cursor-pointer transition-all duration-200 hover:bg-surface-container border-l-4 border-transparent'"
-          @click="selectMessage(message.id)"
+          :to="`/conversations/${message.id}`"
+          :data-testid="`thread-link-${message.id}`"
+          class="block"
         >
-          <div class="flex gap-md">
-            <div class="relative flex-shrink-0">
-              <img alt="Avatar" class="w-12 h-12 rounded-full object-cover" :src="message.avatar_url">
-              <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
-                <div class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: channelColors[message.channel] }" />
+          <div
+            :data-testid="`message-item-${message.id}`"
+            :class="activeId === message.id
+              ? 'message-item-active group p-md rounded-xl cursor-pointer transition-all duration-200 hover:shadow-sm'
+              : 'group p-md rounded-xl cursor-pointer transition-all duration-200 hover:bg-surface-container border-l-4 border-transparent'"
+          >
+            <div class="flex gap-md">
+              <div class="relative flex-shrink-0">
+                <img alt="Avatar" class="w-12 h-12 rounded-full object-cover" :src="message.avatar_url">
+                <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
+                  <div class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: channelColors[message.channel] }" />
+                </div>
               </div>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex justify-between items-start mb-0.5">
-                <h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">{{ message.sender_name }}</h4>
-                <span
-                  class="font-label-caps text-[10px] whitespace-nowrap"
-                  :class="message.unread ? 'text-primary' : 'text-on-surface-variant'"
-                >{{ formatTime(message) }}</span>
-              </div>
-              <p
-                class="font-body-sm text-body-sm truncate mb-sm"
-                :class="message.status === 'pending' ? 'text-on-secondary-container' : 'text-on-surface-variant'"
-              >{{ message.preview }}</p>
-              <div class="flex items-center justify-between">
-                <span
-                  v-if="message.status === 'pending'"
-                  class="px-sm py-0.5 rounded-md bg-primary-container/10 text-primary font-status-label text-status-label border border-primary/20"
-                >Pending</span>
-                <span
-                  v-else
-                  class="px-sm py-0.5 rounded-md bg-tertiary-fixed text-tertiary font-status-label text-status-label border border-outline"
-                >Replied</span>
-                <div v-if="message.unread" class="w-2.5 h-2.5 rounded-full bg-primary" />
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-start mb-0.5">
+                  <h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">{{ message.sender_name }}</h4>
+                  <span
+                    class="font-label-caps text-[10px] whitespace-nowrap"
+                    :class="message.unread ? 'text-primary' : 'text-on-surface-variant'"
+                  >{{ formatTime(message) }}</span>
+                </div>
+                <p
+                  class="font-body-sm text-body-sm truncate mb-sm"
+                  :class="message.status === 'pending' ? 'text-on-secondary-container' : 'text-on-surface-variant'"
+                >{{ message.preview }}</p>
+                <div class="flex items-center justify-between">
+                  <span
+                    v-if="message.status === 'pending'"
+                    class="px-sm py-0.5 rounded-md bg-primary-container/10 text-primary font-status-label text-status-label border border-primary/20"
+                  >Pending</span>
+                  <span
+                    v-else
+                    class="px-sm py-0.5 rounded-md bg-tertiary-fixed text-tertiary font-status-label text-status-label border border-outline"
+                  >Replied</span>
+                  <div v-if="message.unread" class="w-2.5 h-2.5 rounded-full bg-primary" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </NuxtLink>
       </template>
     </div>
 
