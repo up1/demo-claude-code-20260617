@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OmniChat Inbox Dashboard</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#a900a7", "on-secondary-fixed": "#380037", "inverse-on-surface": "#ffebf7", "on-surface-variant": "#564051", surface: "#fff7f9", "surface-variant": "#f4dcec", "on-background": "#251722", secondary: "#a2209f", "surface-container-high": "#fae1f2", "surface-tint": "#a900a7", "surface-container-low": "#ffeff8", "surface-container": "#ffe7f7", "on-secondary-container": "#750073", "surface-container-lowest": "#ffffff", "on-secondary": "#ffffff", "error-container": "#ffdad6", "on-tertiary-fixed-variant": "#414b00", "secondary-fixed": "#ffd7f5", "on-tertiary-container": "#262d00", "inverse-primary": "#ffabf2", background: "#fff7f9", "on-primary-fixed": "#380037", "surface-dim": "#ebd3e3", "outline-variant": "#dcbed3", "primary-container": "#ff00fc", "on-tertiary-fixed": "#191e00", "surface-bright": "#fff7f9", "tertiary-fixed-dim": "#bcd143", "primary-fixed": "#ffd7f5", "on-secondary-fixed-variant": "#810080", outline: "#896f83", "on-surface": "#251722", "primary-fixed-dim": "#ffabf2", "on-primary-container": "#510050", "secondary-fixed-dim": "#ffabf2", "inverse-surface": "#3b2c38", error: "#ba1a1a", "on-error-container": "#93000a", "on-error": "#ffffff", "surface-container-highest": "#f4dcec", "on-tertiary": "#ffffff", "on-primary-fixed-variant": "#810080", "secondary-container": "#fe77f3", tertiary: "#586400", "tertiary-container": "#879a00", "on-primary": "#ffffff", "tertiary-fixed": "#d8ee5d"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"sidebar-width": "280px", xl: "40px", md: "16px", lg: "24px", "chat-list-width": "360px", sm: "8px", unit: "4px", xs: "4px"}, fontFamily: {"headline-md": ["Inter"], "display-lg-mobile": ["Inter"], "body-sm": ["Inter"], "label-caps": ["Inter"], "body-lg": ["Inter"], "status-label": ["Inter"], "display-lg": ["Inter"], headline: ["Inter"], display: ["Inter"], body: ["Inter"], label: ["Inter"]}, fontSize: {"headline-md": ["20px", {lineHeight: "28px", fontWeight: "600"}], "display-lg-mobile": ["24px", {lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700"}], "body-sm": ["14px", {lineHeight: "20px", fontWeight: "400"}], "label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600"}], "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}], "status-label": ["11px", {lineHeight: "12px", fontWeight: "700"}], "display-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700"}]}}}};</script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf8ff; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+        }
+        .message-item-active {
+            border-left: 3px solid #0050cb;
+            background-color: #d0e1fb;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- Global Layout Shell -->
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar (JSON Derived) -->
+<aside class="fixed h-full w-sidebar-width left-0 top-0 border-r border-outline-variant bg-surface flex flex-col z-50">
+<div class="px-lg py-xl flex flex-col gap-sm">
+<div class="flex items-center gap-md mb-lg">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hub</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">OmniChat</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Aggregator</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-md px-lg rounded-xl font-headline-md text-headline-md mb-lg flex items-center justify-center gap-sm shadow-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined">edit_square</span>
+                    Compose
+                </button>
+<nav class="flex flex-col gap-xs">
+<!-- Inbox Active -->
+<a class="flex items-center gap-md px-lg py-md border-l-4 border-primary bg-secondary-container text-on-secondary-container" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inbox</span>
+<span class="font-body-lg text-body-lg">Inbox</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">send</span>
+<span class="font-body-lg text-body-lg">Sent</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">archive</span>
+<span class="font-body-lg text-body-lg">Archived</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-lg text-body-lg">Settings</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto px-lg py-lg border-t border-outline-variant flex flex-col gap-xs">
+<a class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-lg text-body-lg">Help</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-lg text-body-lg">Logout</span>
+</a>
+<div class="flex items-center gap-md p-md mt-md">
+<img alt="User profile avatar" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="A professional headshot of a middle-aged man with a friendly expression, wearing a clean charcoal suit. The lighting is bright and airy, consistent with a high-end office environment. The background is slightly blurred with soft blue and white tones to match the modern dashboard aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx8JKscxrdzrvOsJD4vWuqN-umX1-r2fpJ_hU0j2LJSz7kZksyG_85Y6pVZlVB2mPzYg4Qtfi1PEMZYUQS4lMAAbanshwz9jKTCNIB33Q3tCC2yy1HFcGJOyBMgBpI1rX9-mOGTUk41SQjZnfR9Yemrzp--yNXjXeZPOWLY3FFsvkk4eSDofNacosZ_9BS_8DFkQgPkeSqSaFyg30D7ESeUZSQPGqIjF2SsgovwXaSWxF80G56byUPZI4bcK4M22lQ7zUlaLqZX54"/>
+<div class="overflow-hidden">
+<p class="font-label-caps text-label-caps text-on-surface font-bold truncate">Alex Chen</p>
+<p class="text-[10px] text-on-surface-variant truncate">Admin Access</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-sidebar-width flex-1 flex flex-col h-full bg-surface">
+<!-- TopNavBar (JSON Derived) -->
+<header class="h-16 flex items-center justify-between px-lg w-full border-b border-outline-variant bg-surface sticky top-0 z-40">
+<div class="flex items-center gap-md">
+<h2 class="font-headline-md text-headline-md font-bold text-primary">OmniChat Dashboard</h2>
+</div>
+<div class="flex items-center gap-lg">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-sm">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-lg py-1.5 text-body-sm focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Search across all channels..." type="text"/>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a female professional with glasses, looking directly at the camera with a confident smile. The environment is a clean, minimalist workspace with soft daylight. The image has a crisp, high-resolution feel with a neutral color palette that emphasizes clarity and focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOCFZhrUYwc_jE3G-Dr6pQImEp1KMk3bWs7dsiYRNF7ctNFpEpS_kQDLXrIWq2GVZ_Ga6JQQdD8cRLpbjLHyisESxqrveDqzncuFuRsZ6zGmL7f-bJap20rVSCiFtd5ASHOqMntYIPWHYA-U2dbOHg4JQF08uO25877oZ3OIbfnf5IOMTTUd8LrjjYOTE8oZ-mPOzXBFlMcmNuCLFgZSHFmBNmrLLuaF6BaCaYZuo_1q0eZt2em0Vr4ytDjEiqln4Z9AZTXPCip_M"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Content Container -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Message List Sidebar Pane -->
+<section class="w-chat-list-width flex flex-col border-r border-outline-variant bg-surface-container-lowest">
+<!-- Header & Filters -->
+<div class="p-lg space-y-md">
+<div class="flex items-center justify-between">
+<h3 class="font-display-lg text-display-lg">Inbox <span class="text-on-surface-variant font-normal text-headline-md ml-xs">(128)</span></h3>
+<button class="p-unit rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
+</button>
+</div>
+<!-- Channel Filters -->
+<div class="flex gap-sm overflow-x-auto scrollbar-hide pb-unit">
+<button class="px-md py-1.5 rounded-full bg-primary text-on-primary font-label-caps text-label-caps flex items-center gap-xs">
+                                All
+                            </button>
+<button class="px-md py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-caps text-label-caps flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#1877F2]"></span>
+                                Facebook
+                            </button>
+<button class="px-md py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-caps text-label-caps flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#06C755]"></span>
+                                LINE
+                            </button>
+<button class="px-md py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors font-label-caps text-label-caps flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-[#E4405F]"></span>
+                                Instagram
+                            </button>
+</div>
+<!-- Date Picker & Search -->
+<div class="flex gap-sm">
+<div class="flex-1 relative">
+<span class="absolute left-2.5 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-outline">calendar_today</span>
+<select class="w-full bg-surface-container-low border-none rounded-lg pl-9 pr-md py-2 text-body-sm appearance-none focus:ring-1 focus:ring-primary">
+<option>Last 7 days</option>
+<option>Last 30 days</option>
+<option>Custom Range</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Scrollable Message List -->
+<div class="flex-1 overflow-y-auto scrollbar-hide px-sm space-y-xs pb-lg">
+<!-- Item 1 (Active) -->
+<div class="message-item-active group p-md rounded-xl cursor-pointer transition-all duration-200 hover:shadow-sm">
+<div class="flex gap-md">
+<div class="relative flex-shrink-0">
+<img alt="Avatar" class="w-12 h-12 rounded-full object-cover" data-alt="A portrait of a young man with a casual, creative look, wearing a mustard-colored beanie and a denim jacket. He is set against a soft, sun-drenched outdoor background. The photograph is professional, with a shallow depth of field and a warm, inviting atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwPp5iHNxM-YtHR_qdfKPxxqu4m0gad5q2rXW_LB86zEQ-hxHGB7sjYpuC5QnykUBJeC5iBX7Z5-ExZdVgSFDKoqGe_1IOnfDu4Z19smwLwAOKqwQr1Demseztpb09ZIsUn_VxBThlgFRrPG0EfkFEhE8w-egl0dUA-rUL1DyH0t7t_0JnTGRZc_LNWJnSSz19C6NNMmR-MwY8sAaqi4HsjsNtkDwClLCZNRVFRPYbo7YzD-hsreR9b4xjLfMMi1pg2vK1EvGACsc"/>
+<div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
+<div class="w-2.5 h-2.5 rounded-full bg-[#06C755]"></div>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">Marcus Watanabe</h4>
+<span class="font-label-caps text-[10px] text-primary whitespace-nowrap">10:30 AM</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-secondary-container truncate mb-sm">Can you confirm the tracking number for order #8812?</p>
+<div class="flex items-center justify-between">
+<span class="px-sm py-0.5 rounded-md bg-primary-container/10 text-primary font-status-label text-status-label border border-primary/20">Pending</span>
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group p-md rounded-xl cursor-pointer transition-all duration-200 hover:bg-surface-container border-l-4 border-transparent">
+<div class="flex gap-md">
+<div class="relative flex-shrink-0">
+<img alt="Avatar" class="w-12 h-12 rounded-full object-cover" data-alt="Close-up portrait of a woman with natural, curly hair and a soft smile, wearing a professional linen blazer. The lighting is soft and flattering, coming from the side. The background is a clean, neutral wall in a bright modern studio, creating a professional yet approachable feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGuT3Z3u_JOCf3Nlp1xIPLet0oDLymZkoNEBYiN91tpz1cWvqgLq46i7mdsLtqHVXNBr1w22GFljaDmdZ0x_vUpdBrHnLOR0EgZDVuVUKow3c61Cf_TtnLsRVqsihuDuBRX3kwYveJMXytBPcC39n_nwS4lnNLmYDd4OsXRWkH0WiJNdc1aZON5-v-G4ENs_5MK1w1_hhJQz8jx1dC9ag540SAE40KzfyNrZLb_Mwg3kGNIpATzZwgrZkcnqYv_BxDyezwCJ1K4tM"/>
+<div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
+<div class="w-2.5 h-2.5 rounded-full bg-[#1877F2]"></div>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">Sarah Jenkins</h4>
+<span class="font-label-caps text-[10px] text-on-surface-variant whitespace-nowrap">Yesterday</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate mb-sm">Thank you for the quick resolution!</p>
+<div class="flex items-center justify-between">
+<span class="px-sm py-0.5 rounded-md bg-tertiary-fixed text-tertiary font-status-label text-status-label border border-outline">Replied</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group p-md rounded-xl cursor-pointer transition-all duration-200 hover:bg-surface-container border-l-4 border-transparent">
+<div class="flex gap-md">
+<div class="relative flex-shrink-0">
+<img alt="Avatar" class="w-12 h-12 rounded-full object-cover" data-alt="A portrait of a confident man in his 30s, wearing a navy blue polo shirt. He has a clean-cut appearance and is looking directly at the camera. The setting is a bright, modern interior with subtle wooden textures in the background, conveying a high-quality, professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOsS7cbdAa6-xRklsbbgouQLT46LSkBRFkzbiTMWDJRYps1cab4WVMfe8b9eH41rPKv5dPAcP0g9q1tmMOdnU2KTecD7_Sm8kHBmQEep1iwqP_93h0KRv5OPnez9SAsZSkVgL6bO7JJAdZmImK9cKLaT0TKE36O7_2YjCtKg4CUWTpe9rTHNRTHCsn-V6KAOAz9DONS6CmpJhOdfLKHps-3U-bCIcPfHGkwsx6P1sXF1U1i_EVTlGbFRBcq2VBiOIhhYAr-IVzvEc"/>
+<div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
+<div class="w-2.5 h-2.5 rounded-full bg-[#E4405F]"></div>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">David Wilson</h4>
+<span class="font-label-caps text-[10px] text-primary whitespace-nowrap">2:15 PM</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-secondary-container truncate mb-sm">Do you have the new winter collection in stock yet?</p>
+<div class="flex items-center justify-between">
+<span class="px-sm py-0.5 rounded-md bg-primary-container/10 text-primary font-status-label text-status-label border border-primary/20">Pending</span>
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="group p-md rounded-xl cursor-pointer transition-all duration-200 hover:bg-surface-container border-l-4 border-transparent">
+<div class="flex gap-md">
+<div class="relative flex-shrink-0">
+<img alt="Avatar" class="w-12 h-12 rounded-full object-cover" data-alt="Close-up of a young woman with a calm and professional demeanor, wearing a simple white top. The background is a soft, pastel-toned gradient that feels modern and fresh. The high-resolution photo highlights clear skin and bright eyes, fitting a clean UI theme perfectly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0-d54lHHaH-FX3ThH0MFOzRW0OLgoe9_wLynLHAu9XIjzWxqzCswbU8ut7DyKlm98UvstJ95nkFsmM4RTrV8dSlXJ0y4l_rZqSx4SxN65-Fzoj5SUIrm2pR3t9db9Wppxz3ZAjVwoN1TKj6czqsyJecKkKRyBq1J1mH8bt5oQQkDF-KB1EShyMzCJBjOWbY1cZsqvs5U-UYBl3uqKdVUcDGS_c9R_cLElJ5J1ZlI4YP5pZKLIL3IEObUnDbFIYLwTj6vSBW8ztbA"/>
+<div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full flex items-center justify-center border border-outline-variant">
+<div class="w-2.5 h-2.5 rounded-full bg-[#06C755]"></div>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-0.5">
+<h4 class="font-body-lg text-body-lg font-bold text-on-surface truncate">Li Na</h4>
+<span class="font-label-caps text-[10px] text-on-surface-variant whitespace-nowrap">Monday</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate mb-sm">I'd like to update my shipping address for the recent order.</p>
+<div class="flex items-center justify-between">
+<span class="px-sm py-0.5 rounded-md bg-tertiary-fixed text-tertiary font-status-label text-status-label border border-outline">Replied</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Primary Chat Content (Placeholder / Active Detail) -->
+<section class="flex-1 flex flex-col bg-surface relative">
+<!-- Glassmorphism Overlay for empty state or subtle background effect -->
+<div class="absolute inset-0 pointer-events-none">
+<div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-secondary/5 blur-[100px] rounded-full"></div>
+</div>
+<!-- Chat Header -->
+<div class="h-16 px-lg flex items-center justify-between border-b border-outline-variant relative z-10">
+<div class="flex items-center gap-md">
+<img alt="Profile" class="w-9 h-9 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR_lvb2SPRATSTvfjTT6PyL5mhgOBuuB5Kp1-3wdHD1Pu3PNRNoTIqyZUbm65V2I0btszMpHxuL78d7EMhCmLvUK5Msr5xwroV2LTip-5MEiVaZf_jGk38ByO-Vrk54Z7qkjh7svxowJHu-OXvdpJBx8HUZ-3_oejrDjCcsOM9BwlmpiqAsQBStUNL5Z7N1l321ZCQwuiEWpK57DuS8TetiT8B9ACNZsh3msfvnXp7OTUeZbQblDNZ9zeFKPhuAD7ZRhgtdyJx77k"/>
+<div>
+<h3 class="font-body-lg text-body-lg font-bold text-on-surface">Marcus Watanabe</h3>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Online via LINE</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-all active:scale-95">
+<span class="material-symbols-outlined">call</span>
+</button>
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-all active:scale-95">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<button class="px-md py-2 rounded-lg border border-outline-variant flex items-center gap-xs font-label-caps text-label-caps text-on-surface-variant hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Chat Body (Simplified for visual hierarchy focus) -->
+<div class="flex-1 overflow-y-auto p-lg space-y-lg relative z-10">
+<div class="flex justify-center my-md">
+<span class="px-lg py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Today, 10:15 AM</span>
+</div>
+<!-- Incoming Message -->
+<div class="flex gap-md max-w-[70%]">
+<img alt="User" class="w-8 h-8 rounded-full mt-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChO25ysKRsKwCCVxMjOhAcv_Q-raNko7a8F3MtNwpHLYO_WXg1N5QSbnb06e76JU3W7cmdLj-YwgYmvHDnFvRLhv0OcMz7Sx09vrGzb-qpopYArVRdGzFCGQ0D5q0NoHt-U9AXdsBiwrZvudORRtAgJtFLzl6DYeRboHRd4Sn7nIXRIYIzfGXJIOdiatcO0PqWslMhp-24vCnqg9vVeAodXUdXyIv5KS4JJiROJYi_Vguhyz4GsNPymcYwLQ4n6oytH2ueSIsrQig"/>
+<div class="bg-surface-container p-lg rounded-2xl rounded-bl-none shadow-sm border border-outline-variant/30">
+<p class="font-body-lg text-body-lg text-on-surface">Hello! I'm checking on order #8812. It was supposed to arrive yesterday but I haven't received it yet.</p>
+</div>
+</div>
+<div class="flex gap-md max-w-[70%] ml-10">
+<div class="bg-surface-container p-lg rounded-2xl rounded-bl-none shadow-sm border border-outline-variant/30">
+<p class="font-body-lg text-body-lg text-on-surface">Can you confirm the tracking number for order #8812?</p>
+</div>
+</div>
+<!-- Outgoing Message -->
+<div class="flex flex-row-reverse gap-md max-w-[70%] ml-auto">
+<div class="bg-primary p-lg rounded-2xl rounded-br-none shadow-md">
+<p class="font-body-lg text-body-lg text-on-primary">Hi Marcus! Let me check that for you right away. One moment please while I access the warehouse logs.</p>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex gap-md max-w-[70%] items-center animate-pulse">
+<div class="bg-surface-container-high px-md py-2 rounded-full border border-outline-variant/20 flex gap-1">
+<div class="w-1.5 h-1.5 bg-on-surface-variant/40 rounded-full"></div>
+<div class="w-1.5 h-1.5 bg-on-surface-variant/40 rounded-full"></div>
+<div class="w-1.5 h-1.5 bg-on-surface-variant/40 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Chat Input -->
+<div class="p-lg bg-surface border-t border-outline-variant relative z-10">
+<div class="bg-surface-container-low border border-outline-variant rounded-2xl p-md focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-body-lg scrollbar-hide min-h-[60px] resize-none" placeholder="Type your message here..."></textarea>
+<div class="flex items-center justify-between mt-md border-t border-outline-variant/30 pt-md">
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">image</span>
+</button>
+<div class="h-4 w-[1px] bg-outline-variant"></div>
+<button class="flex items-center gap-xs px-sm py-1 rounded-md hover:bg-surface-container transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span class="font-label-caps text-label-caps">Templates</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary px-lg py-2 rounded-xl font-headline-md text-headline-md flex items-center gap-xs shadow-md active:scale-95 transition-transform">
+                                    Send
+                                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Contextual Detail Pane (Bento Style Info) -->
+<aside class="w-sidebar-width bg-surface-container-lowest border-l border-outline-variant p-lg hidden xl:flex flex-col gap-lg overflow-y-auto scrollbar-hide">
+<div class="text-center py-md border-b border-outline-variant/50">
+<img alt="Profile Large" class="w-24 h-24 rounded-full mx-auto mb-md border-4 border-surface shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP-XGEOaM99C9Hsnn8J8L1QDWnff40Bq9Q5lzwZ4VEm6osmzF0ewh2aXpC8hkY9YFg7VxmedZItDYhHVcATuUN4GCNtgBO8ip-yKGlWtOeZau2JLpQjKZUpexyDSE0gbltjAskDGJ067p-_5n1hgPGs7wMgaOKrX6jlu0kGUo6d6PGoJ6slIZiCi3QCOZAoWi5xMjHMSK0YW9BwG3TF8OtOOHwurkEwlOQ7dhr5VtpkgpWYbO_8grGz-62SgSzi6QQM_q4zvpwtbI"/>
+<h4 class="font-headline-md text-headline-md font-bold text-on-surface">Marcus Watanabe</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tokyo, Japan (GMT+9)</p>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="bg-surface-container p-md rounded-xl border border-outline-variant/30">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs uppercase">Orders</p>
+<p class="font-headline-md text-headline-md font-bold">12</p>
+</div>
+<div class="bg-surface-container p-md rounded-xl border border-outline-variant/30">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-xs uppercase">LTV</p>
+<p class="font-headline-md text-headline-md font-bold text-primary">$1.4k</p>
+</div>
+</div>
+<div class="space-y-md">
+<h5 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest border-b border-outline-variant pb-xs">Contact Info</h5>
+<div class="space-y-sm">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-outline">mail</span>
+<span class="text-body-sm text-on-surface truncate">marcus.w@example.com</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-outline">phone</span>
+<span class="text-body-sm text-on-surface">+81 90-1234-5678</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-outline">alternate_email</span>
+<span class="text-body-sm text-on-surface">@marcus_dev</span>
+</div>
+</div>
+</div>
+<div class="space-y-md">
+<h5 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest border-b border-outline-variant pb-xs">Tags</h5>
+<div class="flex flex-wrap gap-xs">
+<span class="px-sm py-1 rounded bg-secondary-container text-on-secondary-fixed-variant text-[10px] font-bold">VIP_CUSTOMER</span>
+<span class="px-sm py-1 rounded bg-secondary-container text-on-secondary-fixed-variant text-[10px] font-bold">TECH_EARLY_ADOPTER</span>
+<span class="px-sm py-1 rounded bg-error-container text-on-error-container text-[10px] font-bold">URGENT_TICKET</span>
+</div>
+</div>
+<div class="mt-auto pt-lg">
+<button class="w-full py-md border border-outline text-on-surface-variant rounded-xl font-headline-md text-headline-md hover:bg-surface-container transition-all">
+                            View Full Profile
+                        </button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Simple interactive simulation for the sidebar/message list
+        document.querySelectorAll('.message-item-active, .group').forEach(item => {
+            item.addEventListener('click', function() {
+                // Toggle active states
+                document.querySelectorAll('.message-item-active').forEach(el => {
+                    el.classList.remove('message-item-active');
+                    el.classList.add('border-transparent');
+                });
+                this.classList.add('message-item-active');
+                this.classList.remove('border-transparent');
+            });
+        });
+
+        // Add focus effect to chat textarea
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('focus', () => {
+            textarea.closest('.bg-surface-container-low').classList.add('shadow-inner');
+        });
+        textarea.addEventListener('blur', () => {
+            textarea.closest('.bg-surface-container-low').classList.remove('shadow-inner');
+        });
+    </script>
+</body></html>
