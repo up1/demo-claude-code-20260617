@@ -14,12 +14,11 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 | Config         | Environment variables + `godotenv` (local)  |
 | Logging        | `slog` (stdlib, structured JSON)            |
 | Deployment     | Docker Compose (local) + multi-stage Dockerfile (prod) |
-| Testing        | `testing` + `httptest` + [testify](https://github.com/stretchr/testify) |
+| Integration Testing | `testing` + `httptest` + [testify](https://github.com/stretchr/testify) + `testcontainers-go` (MongoDB container)     |
 
 
 ## Project Structure
 ```
-.
 ├── cmd/
 │   └── main.go                  # wiring: config, DB, routes
 ├── internal/
@@ -28,11 +27,11 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 │   │   │   └── order.go         # Order, OrderItem structs + business rules
 │   │   ├── ports/
 │   │   │   ├── order_repository.go   # OrderRepository interface (driven)
-            ├── order_repository_test.go # OrderRepository unit tests
+│   │   │   ├── order_repository_test.go # OrderRepository unit tests
 │   │   │   ├── product_repository.go # ProductRepository interface (driven)
-            ├── product_repository_test.go # ProductRepository unit tests
+│   │   │   ├── product_repository_test.go # ProductRepository unit tests
 │   │   │   └── order_service.go      # OrderService interface (driving)
-            └── order_service_test.go      # OrderService unit tests
+│   │   │   └── order_service_test.go      # OrderService unit tests
 │   │   └── service/
 │   │       └── order_service.go # use-case logic, implements OrderService port
 │   └── adapters/
@@ -54,11 +53,10 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 5. Implement the service layer with use-case logic
 6. Create the HTTP handlers and routes using Gin
 7. Connect to MongoDB and implement repository adapters
-8. Write unit tests for domain logic and service layer
-9. Write integration tests for HTTP handlers and database interactions
-10. Use Docker for local development and testing
-11. Ensure code quality with linters and formatters
-12. Document the API and codebase for maintainability
+8. Write integration tests for HTTP handlers and database interactions with testcontainers-go
+9. Use Docker for local development and testing
+10. Ensure code quality with linters and formatters
+11. Document the API and codebase for maintainability
 
 
 ## Rules
