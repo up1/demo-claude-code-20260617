@@ -18,7 +18,10 @@
      - Status filter => testid=filter-status
      - Search input => testid=search-input
      - Pagination controls => testid=pagination-controls
-5. Clicking a thread navigates to the conversation view (not covered in this spec).
+5. Clicking a thread navigates to the conversation view
+  - Link: `/conversations/{thread_id}`
+  - testid=thread-link-{id}
+  - Call REST API to load conversation details GET `/api/v1/conversations/{thread_id}`
 
 ## Web test cases (Playwright)
 | Test Case                 | Steps                                                                                     | Expected Result                                  |
