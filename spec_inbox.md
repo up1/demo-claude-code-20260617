@@ -2,6 +2,11 @@
 * page= /
 * Component= InboxList
 
+## Implementation of UI
+1. Use HTML template from file `inbox_page.html`
+2. Crete components from html template
+3. Compare nuxt's components with the html template and make sure they are the same
+
 ## Workflow of web page of inbox message list
 1. User visits the dashboard page (`/`).
 2. The frontend sends a `GET /api/v1/inbox/messages` request to load the list of inbox messages.
