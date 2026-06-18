@@ -33,6 +33,47 @@ sequenceDiagram
 - Log the message content and processing status at each step
 - Monitor the performance of the API endpoint and RabbitMQ queue
 
+
+## API Endpoint
+- Endpoint: `POST /api/v1/line/messages`
+- Request Body: LINE message object
+```
+{
+  "to": "USER_ID",
+  "messages": [
+    {
+      "type": "text",
+      "text": "Hello, world!"
+    }
+  ]
+}
+```
+- Response with success status and message ID
+Code=200
+```
+{
+  "status": "success",
+  "messageId": "1234567890"
+}
+```
+
+- Response with error status + request body if message format is invalid
+Code=400
+```
+{
+  "status": "error",
+  "message": "Invalid message format"
+}
+
+- Response with error status + system down
+Code=500
+```
+{
+  "status": "error",
+  "message": "System down"
+}
+```
+
 ## Input of LINE message object
 * LINE message object
 
