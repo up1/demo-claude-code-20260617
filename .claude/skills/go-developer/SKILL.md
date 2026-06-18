@@ -56,7 +56,7 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 8. Write integration tests for HTTP handlers and database interactions with testcontainers-go
 9. Use Docker for local development and testing
 10. Ensure code quality with linters and formatters
-11. Document the API and codebase for maintainability
+11. Summarize the implementation and document the codebase to file `MEMORY.md`
 
 
 ## Rules

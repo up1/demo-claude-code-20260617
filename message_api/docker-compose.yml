@@ -1,0 +1,47 @@
+services:
+  api:
+    build:
+      context: .
+      target: api
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      # Override .env host: inside the compose network MongoDB is reachable as "mongodb".
+      MONGO_URI: mongodb://mongodb:27017
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  # One-off mock-data loader. Not started by `docker compose up` (guarded by a profile).
+  # Run with: docker compose --profile seed run --rm seeder
+  seeder:
+    build:
+      context: .
+      target: seeder
+    profiles: ["seed"]
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+      MONGO_DB: inbox_db
+      SEED_COUNT: "10000000"
+      SEED_BATCH: "10000"
+      SEED_WORKERS: "8"
+      SEED_DROP: "true"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  mongodb:
+    image: mongo:8
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo_data:

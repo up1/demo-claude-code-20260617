@@ -1,0 +1,128 @@
+asyncapi: 3.0.0
+info:
+  title: LINE Messaging API Specification
+  version: 1.0.0
+  description: Specification for receiving LINE webhook events and replying back via the Messaging API.
+
+servers:
+  linePlatform:
+    host: api.line.me
+    protocol: https
+    description: Production environment for the LINE Messaging API.
+
+channels:
+  webhookReceiver:
+    address: /v2/bot/webhook
+    description: The endpoint configured in the LINE Developers Console to receive events from LINE.
+    messages:
+      webhookEvent:
+        $ref: '#/components/messages/WebhookEventObject'
+
+  messageReply:
+    address: /v2/bot/message/reply
+    description: Channel used by the bot application to respond to user messages.
+    messages:
+      textMessagePayload:
+        $ref: '#/components/messages/TextMessageObject'
+
+components:
+  messages:
+    WebhookEventObject:
+      name: WebhookEvent
+      title: LINE Webhook Event List
+      summary: The payload sent by the LINE platform when a user interacts with the bot.
+      payload:
+        type: object
+        required:
+          - destination
+          - events
+        properties:
+          destination:
+            type: string
+            description: User ID of the bot that received the webhook.
+          events:
+            type: array
+            items:
+              $ref: '#/components/schemas/Event'
+
+    TextMessageObject:
+      name: TextMessage
+      title: Reply Text Message Payload
+      summary: Format used to send a standard text message response.
+      payload:
+        type: object
+        required:
+          - to
+          - messages
+        properties:
+          to:
+            type: string
+            description: Destination user ID or reply token.
+          messages:
+            type: array
+            maxItems: 5
+            items:
+              type: object
+              required:
+                - type
+                - text
+              properties:
+                type:
+                  type: string
+                  const: text
+                text:
+                  type: string
+                  maxLength: 5000
+                  description: Contents of the text message.
+
+  schemas:
+    Event:
+      type: object
+      required:
+        - type
+        - mode
+        - timestamp
+        - source
+        - replyToken
+      properties:
+        type:
+          type: string
+          enum: [message, follow, unfollow, join, leave, postback, beacon]
+          description: Event type identification string.
+        mode:
+          type: string
+          enum: [active, standby]
+        timestamp:
+          type: integer
+          format: int64
+          description: Time of the event in milliseconds.
+        source:
+          type: object
+          required:
+            - type
+            - userId
+          properties:
+            type:
+              type: string
+              enum: [user, group, room]
+            userId:
+              type: string
+        replyToken:
+          type: string
+          description: Token used to reply to this specific event.
+        message:
+          type: object
+          required:
+            - id
+            - type
+            - text
+          properties:
+            id:
+              type: string
+              description: Unique message identifier.
+            type:
+              type: string
+              const: text
+            text:
+              type: string
+              description: Text content sent by the user.
