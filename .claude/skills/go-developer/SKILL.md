@@ -9,6 +9,9 @@ description: Develop and Test REST API with Go, Gin, MongoDB, and Hexagonal Arch
 | Language       | Go 1.25                          |
 | HTTP Framework | [Gin v1.12.0](https://github.com/gin-gonic/gin) |
 | Database       | MongoDB 8 — official `go.mongodb.org/mongo-driver` |
+| Redis for caching | `github.com/go-redis/redis/v8`              |
+| Message Queue   | RabbitMQ official — `https://github.com/rabbitmq/rabbitmq-amqp-go-client`      |
+| Tracing        | OpenTelemetry Go SDK (https://github.com/open-telemetry/opentelemetry-go)  |
 | Architecture   | Hexagonal (Ports & Adapters)                |
 | Auth           | JWT — `Authorization: Bearer <token>`       |
 | Config         | Environment variables + `godotenv` (local)  |
